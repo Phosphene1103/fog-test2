@@ -8,35 +8,29 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: 设置 Node.js 18.x
+    - name: 设置 Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18.x'
+        node-version: '20.x'
 
     - name: 安装 Cordova
       run: npm install -g cordova@latest
 
-    - name: 创建项目结构
+    - name: 创建项目
       run: |
         cordova create android-app com.eco.airmonitor fogtest2
         cp index.html android-app/www/
         cp config.xml android-app/
 
-    - name: 添加 Android 平台
-      working-directory: ./android-app
-      run: |
-        cordova platform add android@latest
-
-    - name: 接受 Android 许可
-      run: |
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-
     - name: 构建 APK
       working-directory: ./android-app
-      run: cordova build android
+      run: |
+        cordova platform add android
+        cordova build android
 
-    - name: 上传 APK
-      uses: actions/upload-artifact@v3
+    - name: 上传 APK (v4 语法)
+      uses: actions/upload-artifact@v4
       with:
         name: app-release
-        path: android-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+        path: android-app/platforms/android/**/*.apk
+        retention-days: 3  # 自动保留3天
