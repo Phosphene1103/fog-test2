@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget 
+  id="com.eco.airmonitor"
+  version="1.0.0"
+  xmlns="http://www.w3.org/ns/widgets">
+
+  <!-- 基础配置 -->
+  <name>fogtest2</name>
+  <content src="index.html" />
+  
+  <!-- 权限配置 -->
+  <allow-navigation href="*" />
+  <access origin="*" />
+
+  <!-- Android 平台配置 -->
+  <platform name="android">
+    <preference name="android-versionCode" value="100" />
+    <preference name="Orientation" value="portrait" />
+    <preference name="AndroidWindowSoftInputMode" value="adjustResize" />
+  </platform>
+
+  <!-- 核心插件 -->
+  <plugin name="cordova-plugin-whitelist" spec="^1.3.4" />
+</widget>
