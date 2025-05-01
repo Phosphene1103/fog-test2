@@ -1,47 +1,42 @@
-name: Build Android APK
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+name: Build APK
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
+
+    - name: 设置 Node.js 18.x
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '18.x'
 
-    - name: Install dependencies
-      run: npm install
-      
-    - name: Build web assets
-      run: npm run build
-        
-    - name: Sync Capacitor project
-      run: npx cap sync android
+    - name: 安装 Cordova
+      run: npm install -g cordova@latest
 
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-        
-    - name: Build Android APK
+    - name: 创建项目结构
       run: |
-        cd android
-        ./gradlew assembleDebug --stacktrace
-        cd ..
-        
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
+        cordova create android-app com.eco.airmonitor fogtest2
+        cp index.html android-app/www/
+        cp config.xml android-app/
+
+    - name: 添加 Android 平台
+      working-directory: ./android-app
+      run: |
+        cordova platform add android@latest
+
+    - name: 接受 Android 许可
+      run: |
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+    - name: 构建 APK
+      working-directory: ./android-app
+      run: cordova build android
+
+    - name: 上传 APK
+      uses: actions/upload-artifact@v3
       with:
-        name: app-debug
-        path: android/app/build/outputs/apk/debug/app-debug.apk
-        if-no-files-found: error
+        name: app-release
+        path: android-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
